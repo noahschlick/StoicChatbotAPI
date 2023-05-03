@@ -1,7 +1,7 @@
 from llama_index import SimpleDirectoryReader, GPTListIndex, readers, GPTSimpleVectorIndex, LLMPredictor, PromptHelper, ServiceContext
 from langchain import OpenAI
 import os
-from IPython.display import Markdown, display
+
 
 
 def construct_index(directory_path):
