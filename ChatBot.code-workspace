@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "context_data",
+			"path": "../context_data"
+		},
+		{
+			"name": "ChatBot",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
