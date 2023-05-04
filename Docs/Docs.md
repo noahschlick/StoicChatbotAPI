@@ -29,6 +29,11 @@ The connect_AI function connects to the OpenAI API by setting the OPENAI_API_KEY
 
 Overall, these files work together to provide a REST API and Discord bot that respond to user queries about the FreeWater company. The documentation should provide instructions for setting up and running the application, as well as any necessary environment variables or dependencies.
 
+### interview.txt
+The training data used to train the FreeWater chatbot is stored in the "context_data/data" directory. This data contains sample questions and responses that the chatbot can use to generate appropriate answers to user queries. Specifically, the data includes questions and responses related to FreeWater's business model.
+
+The data has been organized and formatted in a way that can be easily read and processed by the GPTSimpleVectorIndex from the llama_index package, which is used by the chatbot to generate responses.
+
 ### End Points Implementation:
 The FreeWater Chatbot REST API provides three endpoints that can be accessed using HTTP GET requests. The public URL for this API is https://freewaterchatbotapi.onrender.com/.
 
@@ -45,7 +50,7 @@ print(response.text)
 ```
 
 Output:
-```javascript
+```html
 <h1>Welcome to FreeWater chatbot.</h1>
 ```
 
@@ -64,7 +69,7 @@ print(response.json())
 ```
 
 Output:
-```javascript
+```json
 {
     "input": "What is FreeWater?",
     "response": "FreeWater is a company that provides clean and accessible water to people in need around the world."
