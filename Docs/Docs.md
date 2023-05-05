@@ -93,5 +93,26 @@ To set up the FreeWater Chatbot RESTAPI, follow these steps:
  7. Access the API endpoints using HTTP GET requests.
 
 
+ ## Step by Step Procedure
+ 1. I researched how to use the OpenAI API to fine tune chat GPT with training data. I discovered that I could use two libraries to train the AI to answer question pertaining to the FreeWater information. These libraries are llama_index and langchain]
+### llama_index:
+The llama_index library is a python package that provides a set of tools and utilities for building and working with text base search engines. The library includes modules for building search indexes from various sources, such as text files, directories, and web pages. It also includes modules for performing language modeling tasks, such as text classification and prediction. lamma_index includes some of the modules used in this program.
+ - SimpleDirectoryReader: A module for reading text files and directories and creating a simple index of their contents.
+ - GPTSimpleVectorIndex: a module for creating a search index from a list of text strings using the GPT language model and a simple vector representation.
+ - LLMPredictor: a module for using a pre-trained language model to predict the next word or sequence of words in a text.
+ - PromptHelper: a module for generating prompts and suggestions for text-based tasks using a pre-trained language model.
+ - ServiceContext: a module for managing service context and configuration settings for the library.
+
+ ### langchain 
+ I used langchain to access and interact with OpenAI’s language models. Langchain is used to predict the likelihood of a given text sequence based on the trained language model. Langchain is used to initialize the llm parameter of the LLMPredictor class. This sets up a connection to OpenAI;s language model API and configures it with specific stetting scubas temperature, which controls the level of randomness in the generated text.
+
+ Wrote the three function in responses.py which generates a response. The construct_index() function takes a directory path as input, loads text data from files in that directory using the SimpleDirectoryReader class from the llama_index library, and constructs a search index from the text data using the GPTSimpleVectorIndex class. The connect_AI function connects the OpenAI API. the get_responses queries the users question and returns the AI generated answer to the question.
+
+ 2. I then created data used to fin tune the LLM. The data is a simple txt file with a series of questions and unawares to the questions. The question is labeled as the interviewee and the answer is labeled as the interviewer. I looked through FreeWater.io website and produced as mush questions and answers as I could from the information from the website. To test is the language model worked I ran a series of question to the get_response function in responses.py.
+ 3. After the AI was able to produce quality responses, then I used the Flask library to create a REST API to generate a JSON format of the responses.
+4. I then used the hosting service render to host the program. The hosting service generated a url that could be used which is https://freewaterchatbotapi.onrender.com
+5. I descided to write a separate program for the discord chatbot because the browser would time out trying to run the discord chat bot on the hosting service.
+
+
 ## Conclusion
 In conclusion, the FreeWater Chatbot REST API is a versatile and powerful tool for users seeking information about the FreeWater company. The application provides a variety of API endpoints that allow users to easily access information through simple HTTP GET requests. The FreeWater Chatbot REST API is able to reach a wider audience and provide a more convenient and accessible experience for users. With its ease of use, flexibility, and powerful functionality, the FreeWater Chatbot REST API is an excellent example of the power of modern web technologies and the potential they offer for improving communication and engagement between businesses and their customers.
