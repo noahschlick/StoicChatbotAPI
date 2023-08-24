@@ -1,10 +1,10 @@
-# FreeWater Chatbot RESTAPI
+# Stoic Chatbot RESTAPI
 
 The FreeWater Chatbot RESTAPI is a web application built with Python and Flask that provides responses to user queries about the FreeWater company. The api can be used in a variety of applications including discord bots and wordpress
 
 ## Installation
 
-To install the FreeWater Chatbot RESTAPI, follow these steps:
+To install the Chatbot RESTAPI, follow these steps:
 
 1. Clone the repository to your local machine.
 2. Navigate to the project directory.
