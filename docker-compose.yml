@@ -1,0 +1,40 @@
+
+services:
+  stoic-chatbot:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    volumes:
+      # Mount your code for development (hot reload)
+      - .:/app
+      # Mount a volume for persistent data if needed
+      - ./context_data:/app/context_data
+    stdin_open: true
+    tty: true
+    # Override the default command for development
+    command: python main.py
+    
+  # Optional: Web service if you want to run Flask in web mode
+  stoic-chatbot-web:
+    build: .
+    ports:
+      - "5001:5000"
+    env_file:
+      - .env
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    volumes:
+      - .:/app
+      - ./context_data:/app/context_data
+    command: python -c "
+      from main import app, config_env_vars;
+      config_env_vars();
+      app.run(host='0.0.0.0', port=5000, debug=True)
+      "
+    profiles: ["web"]

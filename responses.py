@@ -1,5 +1,5 @@
-from llama_index import SimpleDirectoryReader, GPTListIndex, readers, GPTSimpleVectorIndex, LLMPredictor, PromptHelper, ServiceContext
-from langchain import OpenAI
+from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, Settings, StorageContext, load_index_from_storage
+from llama_index.llms.openai import OpenAI
 import os
 
 """
@@ -8,34 +8,21 @@ Takes a directory path to training data as input and constructs a collection
 of documents that can be used for efficient search and retrieval of information. 
 """
 def construct_index(directory_path):
-    # set maximum input size
-    max_input_size = 4096
+    # Configure the LLM globally using the modern API
+    Settings.llm = OpenAI(
+        model="gpt-3.5-turbo-instruct",
+        temperature=0.5,
+        max_tokens=2000
+    )
     
-    # set the maximum number of tokens that the index will return as output.
-    num_outputs = 2000
-
-    # set the maximum number of overlapping tokens between adjacent input chunks.
-    max_chunk_overlap = 20
-
-    # set the maximum number of tokens that the index will process at once.
-    chunk_size_limit = 600
-
-    # define prompt helper. 
-    prompt_helper = PromptHelper(max_input_size, num_outputs, max_chunk_overlap, chunk_size_limit=chunk_size_limit)
-
-    # define LLM. Predict the likelihood of a given text sequence based on a trained language model (LLM)
-    llm_predictor = LLMPredictor(llm=OpenAI(temperature=0.5, model_name="text-davinci-003", max_tokens=num_outputs))
-
     # Load the training data
     documents = SimpleDirectoryReader(directory_path).load_data()
 
     # Create vector representation of the documents as an index
-    service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor, prompt_helper=prompt_helper)
-    index = GPTSimpleVectorIndex.from_documents(documents, service_context=service_context)
+    index = VectorStoreIndex.from_documents(documents)
 
-    # Save constructed index to json file that allows index to be loaded and used later
-    # with out having to recreate from scratch
-    index.save_to_disk('index.json')
+    # Save constructed index to disk using modern storage
+    index.storage_context.persist(persist_dir="./storage")
 
     return index
 
@@ -47,11 +34,30 @@ by the program based on the input message.
 """
 def get_response(message: str) -> str:    
     directory_path = "context_data/data"
-    index = construct_index(directory_path)
-
-    index = GPTSimpleVectorIndex.load_from_disk('index.json')
-    response = index.query(message)
-    return response.response
+    
+    # Configure the LLM globally
+    Settings.llm = OpenAI(
+        model="gpt-3.5-turbo-instruct",
+        temperature=0.5,
+        max_tokens=2000
+    )
+    
+    # Try to load existing index, if it doesn't exist create a new one
+    try:
+        # Check if storage directory exists
+        if os.path.exists("./storage"):
+            storage_context = StorageContext.from_defaults(persist_dir="./storage")
+            index = load_index_from_storage(storage_context)
+        else:
+            raise FileNotFoundError("No storage directory found")
+    except:
+        # Create new index if loading fails
+        index = construct_index(directory_path)
+    
+    # Query the index using modern API
+    query_engine = index.as_query_engine()
+    response = query_engine.query(message)
+    return str(response)
 
 """
 connect_AI
