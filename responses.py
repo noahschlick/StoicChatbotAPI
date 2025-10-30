@@ -44,9 +44,11 @@ def get_response(message: str) -> str:
     
     # Try to load existing index, if it doesn't exist create a new one
     try:
-        # Check if storage directory exists
+        # Check if storage directory exists. 
         if os.path.exists("./storage"):
+            # Points to the storage directory directory, where your vector index and related data are saved on disk.
             storage_context = StorageContext.from_defaults(persist_dir="./storage")
+            # Load the previously saved vector index (used for sematic search and retrival) from the ./storage directory into memory macking it ready for querying.
             index = load_index_from_storage(storage_context)
         else:
             raise FileNotFoundError("No storage directory found")
@@ -54,7 +56,7 @@ def get_response(message: str) -> str:
         # Create new index if loading fails
         index = construct_index(directory_path)
     
-    # Query the index using modern API
+    # Create a query engine object from your vector index
     query_engine = index.as_query_engine()
     response = query_engine.query(message)
     return str(response)

@@ -37,10 +37,10 @@ def config_env_vars():
     load_dotenv()    
 
 if __name__ == "__main__":
-    #app.run() 
-    config_env_vars()
-    user_response = input("Please enter a question: ")
-    response = responses.get_response(user_response)
-    print("The Response is: ", response)
+    app.run()
+    # config_env_vars()
+    # user_response = input("Please enter a question: ")
+    # response = responses.get_response(user_response)
+    # print("The Response is: ", response)
     
     
