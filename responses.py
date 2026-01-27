@@ -1,4 +1,4 @@
-from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, Settings, StorageContext, load_index_from_storage
+from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, Settings, StorageContext, load_index_from_storage, PromptTemplate
 from llama_index.llms.openai import OpenAI
 import os
 
@@ -12,7 +12,9 @@ def construct_index(directory_path):
     Settings.llm = OpenAI(
         model="gpt-3.5-turbo-instruct",
         temperature=0.5,
-        max_tokens=2000
+        max_tokens=2000,
+        system_prompt="""You are a Stoic philosophy expert. Provide thoughtful, practical wisdom 
+    based on Stoic principles."""
     )
     
     # Load the training data
@@ -26,14 +28,30 @@ def construct_index(directory_path):
 
     return index
 
+def config_full_msg(message: str, conversation_history: list = []) -> str:
+    history_context = "\n".join([
+        f"{h['role']}: {h['content']}"
+        for h in conversation_history[-5:]
+    ])
+
+    full_message = f"""Previous conversation
+    {history_context}
+
+    New question: {message}
+    """
+    return full_message
+
+
 """
 get_response
 The functiontakes a string named message as input, repesenting a user's message
 to a chatbot or similar program. The function returns a string response generated
 by the program based on the input message.
 """
-def get_response(message: str) -> str:    
+def get_response(message: str, conversation_history: list = []) -> str:    
     directory_path = "context_data/data"
+
+    full_message = config_full_msg(message, conversation_history) if conversation_history else message
     
     # Configure the LLM globally
     Settings.llm = OpenAI(
@@ -48,7 +66,7 @@ def get_response(message: str) -> str:
         if os.path.exists("./storage"):
             # Points to the storage directory directory, where your vector index and related data are saved on disk.
             storage_context = StorageContext.from_defaults(persist_dir="./storage")
-            # Load the previously saved vector index (used for sematic search and retrival) from the ./storage directory into memory macking it ready for querying.
+            # Load the previously saved vector index (used for sematic search and retrival) from the ./storage directory into memory making it ready for querying.
             index = load_index_from_storage(storage_context)
         else:
             raise FileNotFoundError("No storage directory found")
@@ -58,7 +76,7 @@ def get_response(message: str) -> str:
     
     # Create a query engine object from your vector index
     query_engine = index.as_query_engine()
-    response = query_engine.query(message)
+    response = query_engine.query(full_message)
     return str(response)
 
 """
